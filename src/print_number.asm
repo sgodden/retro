@@ -42,6 +42,7 @@ Print_Score_Loop
         pop bc
         inc hl
         dec bc
+        ld a, 0
         cp c
         jr NZ, Print_Score_Loop
         ret
