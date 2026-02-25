@@ -22,7 +22,7 @@ Init
 ; Prints a score, where each decimal digit is stored
 ; as one byte.
 ;   hl = address of first byte of score
-;   bc = number of bytes to display
+;   c = number of bytes to display
 Print_Score
 ; Position and set the ink
         push hl
@@ -41,8 +41,8 @@ Print_Score_Loop
         pop hl
         pop bc
         inc hl
-        dec bc
-        ld a, 0
+        dec c
+        xor a
         cp c
         jr NZ, Print_Score_Loop
         ret
