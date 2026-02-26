@@ -1,5 +1,5 @@
 ;START OF PROGRAM
-        org $8000             ;$8000 is 32768 in Decimal
+ORG $8000             ;$8000 is 32768 in Decimal
 
         call Init
 
@@ -12,11 +12,36 @@
         ret
 
 Init
+; Setup screen
         ld hl, ATTR_P
         ld (hl), blu * 8
         call CLS
         ld a, blk
         call BORDER
+; Setup interrupt
+        DI
+        ld de, IM2_Table
+        ld hl, IM2_JP
+        LD a, d
+        ld i, a
+
+        ld a, l
+i1      ld (de), a
+        inc e
+        jr nz, i1
+        inc d
+        ld (de), a
+
+        ld (hl), 0xc3; JP
+        ld bc, Interrupt
+        inc l
+        ld (hl), c; Low byte of interrupt handler code address
+        inc l
+        ld (hl), b; High byte..
+
+        im 2
+        ei
+
         ret
 
 ; Prints a score, where each decimal digit is stored
@@ -61,10 +86,34 @@ Print_Number
         call PRINTSTR
         ret
 
+Interrupt
+        di
+
+        ld a, 2
+        call OUTCHAN
+
+        ld hl, ATTR_P
+        ld (hl), red * 8
+        call CLS
+        ld a, blu
+        call BORDER
+
+        ei
+        ret
+
+
+;******** INTERRUPT SETUP *********************
+IM2_Table equ 0xFEFE
+IM2_JP equ 0xFDFD
+
+;******** High Score stuff ********************
+high_score_attributes defb _at, 10, 10, ink, wht
+
 high_score defb 0,0,0,7,6,8,9,2,3
 high_score_end equ $
 
-high_score_attributes defb _at, 10, 10, ink, wht
+high_score_2 defb 0,0,0,4,2,8,9,2,1
+high_score_2_end equ $
 
 numbers defb 0,1,2,3,4,5,6,7,8,9
 chars defb "0123456789"
