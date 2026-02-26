@@ -107,11 +107,13 @@ Print_Number
 Interrupt
         di
 
-        ld hl, interupt_done
+        ; only perform this processing every 50 cycles (roughly once a second)
+        ld hl, interupt_counter
         ld a, (hl)
-        cp 0
-        jr z, skip_interrupt
-        dec a
+        cp 50
+        jr nz, skip_interrupt
+        ; reset the interrupt counter
+        ld a, 0
         ld (hl), a
 
         ld hl, high_score_2
@@ -120,10 +122,16 @@ Interrupt
         call Print_Score
 
 skip_interrupt
+        ; increment the interrupt counter
+        ld hl, interupt_counter
+        ld a, (hl)
+        inc a
+        ld (hl), a
+
         ei
         ret
 
-interupt_done defb 0x01
+interupt_counter defb 0x00
 
 ;******** INTERRUPT SETUP *********************
 IM2_Table equ 0xFEFE
