@@ -108,6 +108,10 @@ Interrupt
         di
 
         push af
+        push bc
+        push de
+        push ix
+        push iy
 
         ; only perform this processing every 50 cycles (roughly once a second)
         ld hl, interupt_counter
@@ -121,6 +125,10 @@ Interrupt
         ld (hl), a
 
         pop af
+        pop bc
+        pop de
+        pop ix
+        pop iy
 
         ei
         ret
