@@ -9,6 +9,9 @@ ORG $8000             ;$8000 is 32768 in Decimal
         ld hl, high_score
         ld bc, high_score_end - high_score
         call Print_Score
+
+        call Init_Interrupt
+
         ret
 
 Init
@@ -18,6 +21,9 @@ Init
         call CLS
         ld a, blk
         call BORDER
+        ret
+
+Init_Interrupt
 ; Setup interrupt
         DI
         ld de, IM2_Table
@@ -89,18 +95,23 @@ Print_Number
 Interrupt
         di
 
-        ld a, 2
-        call OUTCHAN
+        ld hl, interupt_done
+        ld a, (hl)
+        ld c, 0
+        cp c
+        jr z, skip_interrupt
+        dec a
+        ld (hl), a
 
-        ld hl, ATTR_P
-        ld (hl), red * 8
-        call CLS
-        ld a, blu
-        call BORDER
+        ld hl, high_score_2
+        ld bc, high_score_2_end - high_score_2
+        call Print_Score
 
+skip_interrupt
         ei
         ret
 
+interupt_done defb 0x01
 
 ;******** INTERRUPT SETUP *********************
 IM2_Table equ 0xFEFE
