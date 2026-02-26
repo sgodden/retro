@@ -97,8 +97,7 @@ Interrupt
 
         ld hl, interupt_done
         ld a, (hl)
-        ld c, 0
-        cp c
+        cp 0
         jr z, skip_interrupt
         dec a
         ld (hl), a
@@ -123,7 +122,7 @@ high_score_attributes defb _at, 10, 10, ink, wht
 high_score defb 0,0,0,7,6,8,9,2,3
 high_score_end equ $
 
-high_score_2 defb 0,0,0,4,2,8,9,2,1
+high_score_2 defb 0,0,4,2,8,9,2,1
 high_score_2_end equ $
 
 numbers defb 0,1,2,3,4,5,6,7,8,9
