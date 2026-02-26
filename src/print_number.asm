@@ -12,7 +12,7 @@ ORG $8000             ;$8000 is 32768 in Decimal
         call Print_Score
 
         call Init_Interrupt
-        ret
+        ; ret
 
 main_loop
         xor a
@@ -107,31 +107,37 @@ Print_Number
 Interrupt
         di
 
+        push af
+
         ; only perform this processing every 50 cycles (roughly once a second)
         ld hl, interupt_counter
         ld a, (hl)
-        cp 50
-        jr nz, skip_interrupt
+        cp 0
+        jr z, do_interrupt
+        ; decrement the interrupt counter
+        ld hl, interupt_counter
+        ld a, (hl)
+        dec a
+        ld (hl), a
+
+        pop af
+
+        ei
+        ret
+
+do_interrupt
         ; reset the interrupt counter
-        ld a, 0
+        ld hl, interupt_counter
+        ld a, 51
         ld (hl), a
 
         ld hl, high_score_2
         ld bc, high_score_2_end - high_score_2
         ld de, 0x0B0A ; row 11, col 10
         call Print_Score
-
-skip_interrupt
-        ; increment the interrupt counter
-        ld hl, interupt_counter
-        ld a, (hl)
-        inc a
-        ld (hl), a
-
-        ei
         ret
 
-interupt_counter defb 0x00
+interupt_counter defb 50
 
 ;******** INTERRUPT SETUP *********************
 IM2_Table equ 0xFEFE
