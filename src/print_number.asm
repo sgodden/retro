@@ -8,9 +8,16 @@ ORG $8000             ;$8000 is 32768 in Decimal
 
         ld hl, high_score
         ld bc, high_score_end - high_score
+        ld de, 0x0A0A ; row 10, col 10
         call Print_Score
 
         call Init_Interrupt
+        ret
+
+main_loop
+        xor a
+        cp 0
+        jr z, main_loop
 
         ret
 
@@ -54,10 +61,15 @@ i1      ld (de), a
 ; as one byte.
 ;   hl = address of first byte of score
 ;   c = number of bytes to display
+;   d = y pos
+;   e = x pos
 Print_Score
 ; Position and set the ink
         push hl
         push bc
+        ld ix, high_score_attributes
+        ld (ix + 1), d
+        ld (ix + 2), e
         ld de, high_score_attributes
         ld bc, 5
         call PRINTSTR
@@ -104,6 +116,7 @@ Interrupt
 
         ld hl, high_score_2
         ld bc, high_score_2_end - high_score_2
+        ld de, 0x0B0A ; row 11, col 10
         call Print_Score
 
 skip_interrupt
