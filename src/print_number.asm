@@ -34,9 +34,10 @@ Init_Interrupt
         ld i, a
 
         ld a, l
-i1      ld (de), a
+_init_interrupt_fill
+        ld (de), a
         inc e
-        jr nz, i1
+        jr nz, _init_interrupt_fill
         inc d
         ld (de), a
 
@@ -113,7 +114,7 @@ Interrupt
         ld hl, interupt_counter
         ld a, (hl)
         cp 0
-        jr nz, end_interrupt
+        jr nz, _interrupt_end
 
         ; reset the interrupt counter
         ld hl, interupt_counter
@@ -130,15 +131,15 @@ Interrupt
         ld hl, high_score_end - 1
         ld a, (hl)
         cp 9
-        jr z, zero_score
+        jr z, _interrupt_zero_score
         inc a
         ld (hl), a
-        jr end_interrupt
-zero_score
+        jr _interrupt_end
+_interrupt_zero_score
         ld a, 0
         ld (hl), a
 
-end_interrupt
+_interrupt_end
         ; decrement the interrupt counter
         ld hl, interupt_counter
         ld a, (hl)
