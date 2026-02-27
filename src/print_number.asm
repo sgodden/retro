@@ -26,21 +26,31 @@ Init
         ret
 
 Init_Interrupt
-; Setup interrupt
-        DI
-        ld de, IM2_Table
-        ld hl, IM2_JP
+        _init_interrupt_table equ 0xFE00
+        _init_interrupt_jmp equ 0xFDFD
+        di
+        ld de, _init_interrupt_table
         LD a, d
+        ; set the interrupt pointer to 0xFE
         ld i, a
 
+        ; when the interrupt fires, the ROM loads a byte from the data
+        ; bus, which could be any value, and uses that to index to the address
+        ; of the interrupt code to execute.
+        ; Therefpre, set all 257 bytes from 0xFE00 to 0xFF00, to the value 0xFD
+        ; this will cause the code at 0xFDFD to be executed by the interrupt,
+        ; no matter what low byte is read from the data bus
+        ld hl, _init_interrupt_jmp
         ld a, l
-_init_interrupt_fill
+        _init_interrupt_fill
         ld (de), a
         inc e
         jr nz, _init_interrupt_fill
         inc d
         ld (de), a
 
+        ; place a 3 byte instruction at 0xFDFD to JP to our actual
+        ; interrupt handling code
         ld (hl), 0xc3; JP
         ld bc, Interrupt
         inc l
@@ -71,7 +81,8 @@ Print_Score
         call PRINTSTR
         pop bc
         pop hl
-_print_score_loop
+
+        _print_score_loop
         ld a, (hl)
         push bc
         push hl
@@ -83,6 +94,7 @@ _print_score_loop
         xor a
         cp c
         jr NZ, _print_score_loop
+
         ret
 
 ; Prints one decimal digit
@@ -161,8 +173,6 @@ _interrupt_end
 _interrupt_container defb 25
 
 ;******** INTERRUPT SETUP *********************
-IM2_Table equ 0xFEFE
-IM2_JP equ 0xFDFD
 
 ;******** High Score stuff ********************
 high_score_attributes defb _at, 10, 10, ink, wht
