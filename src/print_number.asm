@@ -110,39 +110,42 @@ Interrupt
         push af
         push bc
         push de
-        push ix
-        push iy
+        push hl
+        ; push ix
+        ; push iy
 
         ; only perform this processing every 50 cycles (roughly once a second)
         ld hl, interupt_counter
         ld a, (hl)
         cp 0
-        jr z, do_interrupt
+        jr nz, skip_interrupt
+
+        ; reset the interrupt counter
+        ld hl, interupt_counter
+        ld a, 51
+        ld (hl), a
+
+        ; do the work
+        ld hl, high_score_2
+        ld bc, high_score_2_end - high_score_2
+        ld de, 0x0B0A ; row 11, col 10
+        call Print_Score
+
+skip_interrupt
         ; decrement the interrupt counter
         ld hl, interupt_counter
         ld a, (hl)
         dec a
         ld (hl), a
 
-        pop af
-        pop bc
+        pop hl
         pop de
-        pop ix
-        pop iy
+        pop bc
+        pop af
+        ; pop ix
+        ; pop iy
 
         ei
-        ret
-
-do_interrupt
-        ; reset the interrupt counter
-        ld hl, interupt_counter
-        ld a, 51
-        ld (hl), a
-
-        ld hl, high_score_2
-        ld bc, high_score_2_end - high_score_2
-        ld de, 0x0B0A ; row 11, col 10
-        call Print_Score
         ret
 
 interupt_counter defb 50
