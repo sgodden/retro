@@ -71,8 +71,7 @@ Print_Score
         call PRINTSTR
         pop bc
         pop hl
-
-Print_Score_Loop
+_print_score_loop
         ld a, (hl)
         push bc
         push hl
@@ -83,22 +82,24 @@ Print_Score_Loop
         dec c
         xor a
         cp c
-        jr NZ, Print_Score_Loop
+        jr NZ, _print_score_loop
         ret
 
 ; Prints one decimal digit
 ;   a = the decimal value (0-9)
 Print_Number
-        ld hl, numbers + 9
+        ld hl, _print_number_numbers + 9
         ld bc, 10
         cpdr
-        ld hl, chars
+        ld hl, _print_number_chars
         add hl, bc
         push hl
         pop de
         ld bc, 1
         call PRINTSTR
         ret
+_print_number_numbers defb 0,1,2,3,4,5,6,7,8,9
+_print_number_chars defb "0123456789"
 
 Interrupt
         di
@@ -166,9 +167,6 @@ IM2_JP equ 0xFDFD
 high_score_attributes defb _at, 10, 10, ink, wht
 high_score defb 0,0,0,7,6,8,9,2,3
 high_score_end equ $
-
-numbers defb 0,1,2,3,4,5,6,7,8,9
-chars defb "0123456789"
 
 ;********** SYSTEM VARIABLES *********
 ATTR_P EQU 23693                    ;ATTR-P Sysvar (Attributes)
