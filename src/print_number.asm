@@ -7,13 +7,11 @@ ORG $8000             ;$8000 is 32768 in Decimal
         call OUTCHAN
 
         call Init_Interrupt
-        ; ret
 
 main_loop
         xor a
         cp 0
         jr z, main_loop
-
         ret
 
 Init
@@ -28,9 +26,10 @@ Init
 Init_Interrupt
         _init_interrupt_table equ 0xFE00
         _init_interrupt_jmp equ 0xFDFD
+
         di
         ld de, _init_interrupt_table
-        LD a, d
+        ld a, d
         ; set the interrupt pointer to 0xFE
         ld i, a
 
@@ -99,6 +98,8 @@ Print_Score
 
 ; Prints one decimal digit
 ;   a = the decimal value (0-9)
+        _print_number_numbers defb 0,1,2,3,4,5,6,7,8,9
+        _print_number_chars defb "0123456789"
 Print_Number
         ld hl, _print_number_numbers + 9
         ld bc, 10
@@ -110,9 +111,8 @@ Print_Number
         ld bc, 1
         call PRINTSTR
         ret
-_print_number_numbers defb 0,1,2,3,4,5,6,7,8,9
-_print_number_chars defb "0123456789"
 
+        _interrupt_counter defb 25
 Interrupt
         di
 
@@ -125,13 +125,13 @@ Interrupt
         push iy
 
         ; only perform this processing every 25 cycles (roughly every half second)
-        ld hl, _interrupt_container
+        ld hl, _interrupt_counter
         ld a, (hl)
         cp 0
         jr nz, _interrupt_end
 
         ; reset the interrupt counter
-        ld hl, _interrupt_container
+        ld hl, _interrupt_counter
         ld a, 26
         ld (hl), a
 
@@ -149,28 +149,28 @@ Interrupt
         inc a
         ld (hl), a
         jr _interrupt_end
-_interrupt_zero_score
-        ld a, 0
-        ld (hl), a
 
-_interrupt_end
-        ; decrement the interrupt counter
-        ld hl, _interrupt_container
-        ld a, (hl)
-        dec a
-        ld (hl), a
+        _interrupt_zero_score
+                ld a, 0
+                ld (hl), a
 
-        ; restore registers
-        pop iy
-        pop ix
-        pop hl
-        pop de
-        pop bc
-        pop af
+        _interrupt_end
+                ; decrement the interrupt counter
+                ld hl, _interrupt_counter
+                ld a, (hl)
+                dec a
+                ld (hl), a
+
+                ; restore registers
+                pop iy
+                pop ix
+                pop hl
+                pop de
+                pop bc
+                pop af
 
         ei
         ret
-_interrupt_container defb 25
 
 ;******** INTERRUPT SETUP *********************
 
