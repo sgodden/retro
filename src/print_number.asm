@@ -60,7 +60,7 @@ _init_interrupt_fill
 ;   d = y pos
 ;   e = x pos
 Print_Score
-; Position and set the ink
+        ; Position and set the ink
         push hl
         push bc
         ld ix, high_score_attributes
@@ -104,6 +104,7 @@ _print_number_chars defb "0123456789"
 Interrupt
         di
 
+        ; store registers
         push af
         push bc
         push de
@@ -112,13 +113,13 @@ Interrupt
         push iy
 
         ; only perform this processing every 25 cycles (roughly every half second)
-        ld hl, interupt_counter
+        ld hl, _interrupt_container
         ld a, (hl)
         cp 0
         jr nz, _interrupt_end
 
         ; reset the interrupt counter
-        ld hl, interupt_counter
+        ld hl, _interrupt_container
         ld a, 26
         ld (hl), a
 
@@ -142,11 +143,12 @@ _interrupt_zero_score
 
 _interrupt_end
         ; decrement the interrupt counter
-        ld hl, interupt_counter
+        ld hl, _interrupt_container
         ld a, (hl)
         dec a
         ld (hl), a
 
+        ; restore registers
         pop iy
         pop ix
         pop hl
@@ -156,8 +158,7 @@ _interrupt_end
 
         ei
         ret
-
-interupt_counter defb 25
+_interrupt_container defb 25
 
 ;******** INTERRUPT SETUP *********************
 IM2_Table equ 0xFEFE
