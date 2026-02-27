@@ -131,6 +131,11 @@ Interrupt
         ld de, 0x0B0A ; row 11, col 10
         call Print_Score
 
+        ld hl, high_score_2_end - 1
+        ld a, (hl)
+        inc a
+        ld (hl), a
+
 skip_interrupt
         ; decrement the interrupt counter
         ld hl, interupt_counter
