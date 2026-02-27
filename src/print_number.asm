@@ -42,9 +42,9 @@ Init_Interrupt
         ld hl, _init_interrupt_jmp
         ld a, l
         _init_interrupt_fill
-        ld (de), a
-        inc e
-        jr nz, _init_interrupt_fill
+                ld (de), a
+                inc e
+                jr nz, _init_interrupt_fill
         inc d
         ld (de), a
 
