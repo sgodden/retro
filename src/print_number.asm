@@ -6,11 +6,6 @@ ORG $8000             ;$8000 is 32768 in Decimal
         ld a, 2
         call OUTCHAN
 
-        ld hl, high_score
-        ld bc, high_score_end - high_score
-        ld de, 0x0A0A ; row 10, col 10
-        call Print_Score
-
         call Init_Interrupt
         ; ret
 
@@ -111,8 +106,8 @@ Interrupt
         push bc
         push de
         push hl
-        ; push ix
-        ; push iy
+        push ix
+        push iy
 
         ; only perform this processing every 25 cycles (roughly every half second)
         ld hl, interupt_counter
@@ -126,13 +121,13 @@ Interrupt
         ld (hl), a
 
         ; print the current high score
-        ld hl, high_score_2
-        ld bc, high_score_2_end - high_score_2
+        ld hl, high_score
+        ld bc, high_score_end - high_score
         ld de, 0x0B0A ; row 11, col 10
         call Print_Score
 
         ; increment the high score
-        ld hl, high_score_2_end - 1
+        ld hl, high_score_end - 1
         ld a, (hl)
         cp 9
         jr z, zero_score
@@ -150,12 +145,12 @@ end_interrupt
         dec a
         ld (hl), a
 
+        pop iy
+        pop ix
         pop hl
         pop de
         pop bc
         pop af
-        ; pop ix
-        ; pop iy
 
         ei
         ret
@@ -168,12 +163,8 @@ IM2_JP equ 0xFDFD
 
 ;******** High Score stuff ********************
 high_score_attributes defb _at, 10, 10, ink, wht
-
 high_score defb 0,0,0,7,6,8,9,2,3
 high_score_end equ $
-
-high_score_2 defb 0,0,4,2,8,9,2,1
-high_score_2_end equ $
 
 numbers defb 0,1,2,3,4,5,6,7,8,9
 chars defb "0123456789"
