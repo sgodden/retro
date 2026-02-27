@@ -114,29 +114,36 @@ Interrupt
         ; push ix
         ; push iy
 
-        ; only perform this processing every 50 cycles (roughly once a second)
+        ; only perform this processing every 25 cycles (roughly every half second)
         ld hl, interupt_counter
         ld a, (hl)
         cp 0
-        jr nz, skip_interrupt
+        jr nz, end_interrupt
 
         ; reset the interrupt counter
         ld hl, interupt_counter
-        ld a, 51
+        ld a, 26
         ld (hl), a
 
-        ; do the work
+        ; print the current high score
         ld hl, high_score_2
         ld bc, high_score_2_end - high_score_2
         ld de, 0x0B0A ; row 11, col 10
         call Print_Score
 
+        ; increment the high score
         ld hl, high_score_2_end - 1
         ld a, (hl)
+        cp 9
+        jr z, zero_score
         inc a
         ld (hl), a
+        jr end_interrupt
+zero_score
+        ld a, 0
+        ld (hl), a
 
-skip_interrupt
+end_interrupt
         ; decrement the interrupt counter
         ld hl, interupt_counter
         ld a, (hl)
@@ -153,7 +160,7 @@ skip_interrupt
         ei
         ret
 
-interupt_counter defb 50
+interupt_counter defb 25
 
 ;******** INTERRUPT SETUP *********************
 IM2_Table equ 0xFEFE
