@@ -86,13 +86,22 @@ loop_1
         dec ix ; points to current digit of current score
         dec iy ; points to current digit of score to add
 
-        ; set a to the value of current score digit
+loop_2
         ld a, (ix)
         ld d, (iy)
-
-        ; add the digit to the accumulator
         add a, d
+
+        cp 10
+        jp c, _store_current_digit
+
+        ; greater than 10
+        ;  subtract 10
+        sub 10
+        ;  store current digit
+        ;  add 1 to previous digit 
+
         ; store that back
+_store_current_digit
         ld ix, high_score_end
         ld (ix - 1), a
 
@@ -216,10 +225,10 @@ Interrupt
 
 ;******** High Score stuff ********************
 high_score_attributes defb _at, 10, 10, ink, wht
-high_score defb 0,0,0,7,6,8,9,2,1
+high_score defb 0,0,0,7,6,8,9,0,1
 high_score_end equ $
 
-points_to_add defb 3,6,2
+points_to_add defb 3,6,3
 points_to_add_end equ $
 
 ;********** SYSTEM VARIABLES *********
