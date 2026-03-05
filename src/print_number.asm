@@ -86,17 +86,21 @@ loop_1
         dec ix ; points to current digit of current score
         dec iy ; points to current digit of score to add
 
+        ld d, (iy)
+
 loop_2
         ld a, (ix)
-        ld d, (iy)
         add a, d
 
         cp 10
-        jp c, _store_current_digit
+        jp c, _store_current_digit ; < 10
 
-        ; greater than 10
-        ;  subtract 10
+        ; > = 10
         sub 10
+        ld (ix), a
+        ld d, 1
+        dec ix
+        jp loop_2
         ;  store current digit
         ;  add 1 to previous digit 
 
