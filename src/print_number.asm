@@ -62,6 +62,23 @@ Init_Interrupt
 
         ret
 
+; **********************************************************************
+; Adds a single decimal digit per byte (0-9) number to the current score.
+;  hl = address of first digit of number to add
+;  c = number of bytes in the number
+; **********************************************************************
+Add_to_Score
+; TODO - implement
+; get the digit at (hl + c-1)
+; add that to (high_score + high_score_len - 1)
+; cp that to 10
+;       if carry set
+;           set that digit to value minus 10
+;           move left one digit in the high score
+;           add 1 to that digit
+;           go to if carry set
+; TODO - handle overflow of the entire high score
+
 ; Prints a score, where each decimal digit is stored
 ; as one byte.
 ;   hl = address of first byte of score
@@ -85,7 +102,7 @@ Print_Score
         ld a, (hl)
         push bc
         push hl
-        call Print_Number
+        call Print_Digit
         pop hl
         pop bc
         inc hl
@@ -100,7 +117,7 @@ Print_Score
 ;   a = the decimal value (0-9)
         _print_number_numbers defb 0,1,2,3,4,5,6,7,8,9
         _print_number_chars defb "0123456789"
-Print_Number
+Print_Digit
         ld hl, _print_number_numbers + 9
         ld bc, 10
         cpdr
@@ -112,7 +129,10 @@ Print_Number
         call PRINTSTR
         ret
 
-        _interrupt_counter defb 25
+; *****************************
+; INTERRUPT HANDLING CODE
+; *****************************
+        _interrupt_counter defb 50
 Interrupt
         di
 
@@ -132,7 +152,7 @@ Interrupt
 
         ; reset the interrupt counter
         ld hl, _interrupt_counter
-        ld a, 26
+        ld a, 50
         ld (hl), a
 
         ; print the current high score
@@ -178,6 +198,9 @@ Interrupt
 high_score_attributes defb _at, 10, 10, ink, wht
 high_score defb 0,0,0,7,6,8,9,2,3
 high_score_end equ $
+
+points_to_add defb 3,6,7
+points_to_add_end equ $
 
 ;********** SYSTEM VARIABLES *********
 ATTR_P EQU 23693                    ;ATTR-P Sysvar (Attributes)
