@@ -79,13 +79,16 @@ Add_to_Score
 ;           go to if carry set
         ; load the last digit of the current score into d
         ld ix, high_score_end
-        ld d, (ix - 1)
-
-        ; set a to the value of last digit of number to add
         push hl
-        pop ix
-        add ix, bc
-        ld a, (ix - 1)
+        pop iy
+        add iy, bc
+loop_1
+        dec ix ; points to current digit of current score
+        dec iy ; points to current digit of score to add
+
+        ; set a to the value of current score digit
+        ld a, (ix)
+        ld d, (iy)
 
         ; add the digit to the accumulator
         add a, d
