@@ -72,11 +72,29 @@ Add_to_Score
 ; get the digit at (hl + c-1)
 ; add that to (high_score + high_score_len - 1)
 ; cp that to 10
-;       if carry set
+;       if carry(overflow) set
 ;           set that digit to value minus 10
 ;           move left one digit in the high score
 ;           add 1 to that digit
 ;           go to if carry set
+        ; load the last digit of the current score into d
+        ld ix, high_score_end
+        ld d, (ix - 1)
+
+        ; set a to the value of last digit of number to add
+        push hl
+        pop ix
+        ld b, 0
+        add ix, bc
+        ld a, (ix - 1)
+
+        ; add the digit to the accumulator
+        add a, d
+        ; store that back
+        ld (ix - 1), a
+
+        call Print_Score
+        ret
 ; TODO - handle overflow of the entire high score
 
 ; Prints a score, where each decimal digit is stored
@@ -155,6 +173,11 @@ Interrupt
         ld a, 50
         ld (hl), a
 
+        ; add some points to the high score
+        ld hl, points_to_add
+        ld bc, points_to_add_end - points_to_add
+        call Add_to_Score
+
         ; print the current high score
         ld hl, high_score
         ld bc, high_score_end - high_score
@@ -162,13 +185,13 @@ Interrupt
         call Print_Score
 
         ; increment the high score
-        ld hl, high_score_end - 1
-        ld a, (hl)
-        cp 9
-        jr z, _interrupt_zero_score
-        inc a
-        ld (hl), a
-        jr _interrupt_end
+        ; ld hl, high_score_end - 1
+        ; ld a, (hl)
+        ; cp 9
+        ; jr z, _interrupt_zero_score
+        ; inc a
+        ; ld (hl), a
+        ; jr _interrupt_end
 
         _interrupt_zero_score
                 ld a, 0
