@@ -93,9 +93,9 @@ Add_to_Score
         ld ix, high_score_end
         ld (ix - 1), a
 
-        call Print_Score
         ret
 ; TODO - handle overflow of the entire high score
+; *********************************************************************
 
 ; Prints a score, where each decimal digit is stored
 ; as one byte.
@@ -176,7 +176,6 @@ Interrupt
         ; print the current high score
         ld hl, high_score
         ld bc, high_score_end - high_score
-        ld de, 0x0B0A ; row 11, col 10
         call Print_Score
 
         ; increment the high score
