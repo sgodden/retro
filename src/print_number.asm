@@ -102,8 +102,7 @@ loop_2
 
         ; store that back
 _store_current_digit
-        ld ix, high_score_end
-        ld (ix - 1), a
+        ld (ix), a
 
         ret
 ; TODO - handle overflow of the entire high score
