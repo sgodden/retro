@@ -160,7 +160,7 @@ Print_Digit
 ; *****************************
 ; INTERRUPT HANDLING CODE
 ; *****************************
-        _interrupt_counter defb 50
+        _interrupt_counter defb 25
 Interrupt
         di
 
@@ -180,7 +180,7 @@ Interrupt
 
         ; reset the interrupt counter
         ld hl, _interrupt_counter
-        ld a, 50
+        ld a, 25
         ld (hl), a
 
         ; add some points to the high score
