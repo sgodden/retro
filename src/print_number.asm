@@ -65,7 +65,7 @@ Init_Interrupt
 ; **********************************************************************
 ; Adds a single decimal digit per byte (0-9) number to the current score.
 ;  hl = address of first digit of number to add
-;  c = number of bytes in the number
+;  bc = number of bytes in the number
 ; **********************************************************************
 Add_to_Score
 ; TODO - implement
@@ -84,13 +84,13 @@ Add_to_Score
         ; set a to the value of last digit of number to add
         push hl
         pop ix
-        ld b, 0
         add ix, bc
         ld a, (ix - 1)
 
         ; add the digit to the accumulator
         add a, d
         ; store that back
+        ld ix, high_score_end
         ld (ix - 1), a
 
         call Print_Score
@@ -101,15 +101,10 @@ Add_to_Score
 ; as one byte.
 ;   hl = address of first byte of score
 ;   c = number of bytes to display
-;   d = y pos
-;   e = x pos
 Print_Score
         ; Position and set the ink
         push hl
         push bc
-        ld ix, high_score_attributes
-        ld (ix + 1), d
-        ld (ix + 2), e
         ld de, high_score_attributes
         ld bc, 5
         call PRINTSTR
@@ -219,10 +214,10 @@ Interrupt
 
 ;******** High Score stuff ********************
 high_score_attributes defb _at, 10, 10, ink, wht
-high_score defb 0,0,0,7,6,8,9,2,3
+high_score defb 0,0,0,7,6,8,9,2,1
 high_score_end equ $
 
-points_to_add defb 3,6,7
+points_to_add defb 3,6,2
 points_to_add_end equ $
 
 ;********** SYSTEM VARIABLES *********
