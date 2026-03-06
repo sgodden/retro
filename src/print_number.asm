@@ -97,12 +97,11 @@ loop_2
 
         ; > = 10
         sub 10
-        ld (ix), a
+        ld (ix), a ; store the current digit
+        ; add 1 to the previous digit
         ld d, 1
         dec ix
         jp loop_2
-        ;  store current digit
-        ;  add 1 to previous digit 
 
         ; store that back
 _store_current_digit
