@@ -14,54 +14,6 @@ main_loop
         jr z, main_loop
         ret
 
-Init
-; Setup screen
-        ld hl, ATTR_P
-        ld (hl), blu * 8
-        call CLS
-        ld a, blk
-        call BORDER
-        ret
-
-Init_Interrupt
-        _init_interrupt_table equ 0xFE00
-        _init_interrupt_jmp equ 0xFDFD
-
-        di
-        ld de, _init_interrupt_table
-        ld a, d
-        ; set the interrupt pointer to 0xFE
-        ld i, a
-
-        ; when the interrupt fires, the ROM loads a byte from the data
-        ; bus, which could be any value, and uses that to index to the address
-        ; of the interrupt code to execute.
-        ; Therefpre, set all 257 bytes from 0xFE00 to 0xFF00, to the value 0xFD
-        ; this will cause the code at 0xFDFD to be executed by the interrupt,
-        ; no matter what low byte is read from the data bus
-        ld hl, _init_interrupt_jmp
-        ld a, l
-        _init_interrupt_fill
-                ld (de), a
-                inc e
-                jr nz, _init_interrupt_fill
-        inc d
-        ld (de), a
-
-        ; place a 3 byte instruction at 0xFDFD to JP to our actual
-        ; interrupt handling code
-        ld (hl), 0xc3; JP
-        ld bc, Interrupt
-        inc l
-        ld (hl), c; Low byte of interrupt handler code address
-        inc l
-        ld (hl), b; High byte..
-
-        im 2
-        ei
-
-        ret
-
 ; **********************************************************************
 ; Adds a single decimal digit per byte (0-9) number to the current score.
 ;  hl = address of first digit of number to add
@@ -154,6 +106,54 @@ Print_Digit
         pop de
         ld bc, 1
         call PRINTSTR
+        ret
+
+Init
+; Setup screen
+        ld hl, ATTR_P
+        ld (hl), blu * 8
+        call CLS
+        ld a, blk
+        call BORDER
+        ret
+
+Init_Interrupt
+        _init_interrupt_table equ 0xFE00
+        _init_interrupt_jmp equ 0xFDFD
+
+        di
+        ld de, _init_interrupt_table
+        ld a, d
+        ; set the interrupt pointer to 0xFE
+        ld i, a
+
+        ; when the interrupt fires, the ROM loads a byte from the data
+        ; bus, which could be any value, and uses that to index to the address
+        ; of the interrupt code to execute.
+        ; Therefpre, set all 257 bytes from 0xFE00 to 0xFF00, to the value 0xFD
+        ; this will cause the code at 0xFDFD to be executed by the interrupt,
+        ; no matter what low byte is read from the data bus
+        ld hl, _init_interrupt_jmp
+        ld a, l
+        _init_interrupt_fill
+                ld (de), a
+                inc e
+                jr nz, _init_interrupt_fill
+        inc d
+        ld (de), a
+
+        ; place a 3 byte instruction at 0xFDFD to JP to our actual
+        ; interrupt handling code
+        ld (hl), 0xc3; JP
+        ld bc, Interrupt
+        inc l
+        ld (hl), c; Low byte of interrupt handler code address
+        inc l
+        ld (hl), b; High byte..
+
+        im 2
+        ei
+
         ret
 
 ; *****************************
