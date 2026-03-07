@@ -136,7 +136,7 @@ Print_Score
         dec c
         xor a
         cp c
-        jr NZ, _print_score_loop
+        jp NZ, _print_score_loop
 
         ret
 
