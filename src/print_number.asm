@@ -30,10 +30,10 @@ Add_to_Score
 ;           add 1 to that digit
 ;           go to if carry set
         ; load the last digit of the current score into d
-        ld ix, high_score_end
         push hl
-        pop iy
+        pop iy ; iy now points to last digit of score to add + 1
         add iy, bc
+        ld ix, high_score_end
 loop_1
         dec ix ; points to current digit of current score
         dec iy ; points to current digit of score to add
@@ -70,7 +70,7 @@ _process_next_number
         pop ix
         ld a, c
         ; FIXME as soon as this processes more than 2 bytes of score to add, it screws up, WHY?!
-        cp 5
+        ; cp 2
         ; jp nz, loop_1
 
         ret
@@ -80,7 +80,7 @@ _process_next_number
 ; Prints a score, where each decimal digit is stored
 ; as one byte.
 ;   hl = address of first byte of score
-;   c = number of bytes to display
+;   bc = number of bytes to display
 Print_Score
         ; Position and set the ink
         push hl
@@ -182,7 +182,14 @@ Interrupt
         push de
         push hl
         push ix
+        exx
+        ex af, af' ; '
+        push af
+        push bc
+        push de
+        push hl
         push iy
+
 
         ; only perform this processing every 25 cycles (roughly every half second)
         ld hl, _interrupt_counter
@@ -227,6 +234,12 @@ Interrupt
 
                 ; restore registers
                 pop iy
+                pop hl
+                pop de
+                pop bc
+                pop af
+                exx
+                ex af, af' ;'
                 pop ix
                 pop hl
                 pop de
@@ -241,11 +254,11 @@ _interrupt_counter defb 25
 
 ;******** High Score stuff ********************
 high_score_attributes defb _at, 10, 10, ink, wht
-high_score defb 0,0,0,7,6,8,9,0,1
-high_score_end equ $
+high_score defb 0,0,0,7,6,8,9,0,1,2
+high_score_end defb 0
 
-points_to_add defb 1, 1, 1, 1, 1,1,9
-points_to_add_end equ $
+points_to_add defb 3,6,3
+points_to_add_end defb 0
 
 ;********** SYSTEM VARIABLES *********
 ATTR_P EQU 23693                    ;ATTR-P Sysvar (Attributes)
