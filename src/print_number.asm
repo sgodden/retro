@@ -38,6 +38,7 @@ Add_to_Score
 loop_1
         dec ix ; points to current digit of current score
         dec iy ; points to current digit of score to add
+        dec bc
 
         push ix
 
@@ -63,7 +64,11 @@ _store_current_digit
         ld (ix), a
 
         pop ix
+        ld a, c
+        cp 2
+        jp nz, loop_1
 
+        ld a, 0
         ret
 ; TODO - handle overflow of the entire high score
 ; *********************************************************************
