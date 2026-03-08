@@ -19,6 +19,7 @@ main_loop
 ;  hl = address of first digit of number to add
 ;  bc = number of bytes in the number
 ; **********************************************************************
+label1 defb "Add_to_Score"
 Add_to_Score
 ; TODO - implement
 ; get the digit at (hl + c-1)
@@ -37,6 +38,8 @@ Add_to_Score
 loop_1
         dec ix ; points to current digit of current score
         dec iy ; points to current digit of score to add
+
+        push ix
 
         ld d, (iy)
 
@@ -58,6 +61,8 @@ loop_2
         ; store that back
 _store_current_digit
         ld (ix), a
+
+        pop ix
 
         ret
 ; TODO - handle overflow of the entire high score
