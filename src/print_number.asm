@@ -19,7 +19,6 @@ main_loop
 ;  hl = address of first digit of number to add
 ;  bc = number of bytes in the number
 ; **********************************************************************
-label1 defb "Add_to_Score"
 Add_to_Score
 ; TODO - implement
 ; get the digit at (hl + c-1)
@@ -70,7 +69,8 @@ _store_current_digit
 _process_next_number
         pop ix
         ld a, c
-        cp 0
+        ; FIXME as soon as this processes more than 2 bytes of score to add, it screws up, WHY?!
+        cp 5
         jp nz, loop_1
 
         ld a, 0
@@ -174,7 +174,6 @@ Init_Interrupt
 ; *****************************
 ; INTERRUPT HANDLING CODE
 ; *****************************
-        _interrupt_counter defb 25
 Interrupt
         di
 
@@ -239,13 +238,14 @@ Interrupt
         ret
 
 ;******** INTERRUPT SETUP *********************
+_interrupt_counter defb 25
 
 ;******** High Score stuff ********************
 high_score_attributes defb _at, 10, 10, ink, wht
 high_score defb 0,0,0,7,6,8,9,0,1
 high_score_end equ $
 
-points_to_add defb 1, 1, 1, 1, 1
+points_to_add defb 1, 1, 1, 1, 1,1,1
 points_to_add_end equ $
 
 ;********** SYSTEM VARIABLES *********
