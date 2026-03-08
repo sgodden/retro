@@ -30,31 +30,16 @@ main_loop
 ;  bc = number of bytes in the number
 ; **********************************************************************
 Add_to_Score
-; TODO - implement
-; get the digit at (hl + c-1)
-; add that to (high_score + high_score_len - 1)
-; cp that to 10
-;       if carry(overflow) set
-;           set that digit to value minus 10
-;           move left one digit in the high score
-;           add 1 to that digit
-;           go to if carry set
-        ; load the last digit of the current score into d
-        add hl, bc ; iy now points to last digit of score to add + 1
+        add hl, bc; hl now points to end of score to add + 1
         ld ix, high_score_end
-loop_1
-        dec ix ; points to current digit of current score
-        dec hl ; points to current digit of score to add
-        dec c
+loop_1 ; process the next byte (lowest to highest)
+        dec ix ; point to next byte of current score
+        dec hl ; point to next byte of score to add
+        dec c ; decrement number of bytes remaining to process
 
         push ix
 
         ld d, (hl)
-
-        ; ld a, d
-        ; cp 0
-        ; jp z, _process_next_number ; nothing to add, skip
-
 loop_2
         ld a, (ix)
         add a, d
@@ -62,24 +47,22 @@ loop_2
         cp 10
         jp c, _store_current_digit ; < 10
 
-        ; > = 10
+        ; > = 10, carry 1
         sub 10
         ld (ix), a ; store the current digit
-        ; add 1 to the previous digit
+        ; carry 1 to the previous digit
         ld d, 1
         dec ix
         jp loop_2
 
-        ; store that back
 _store_current_digit
         ld (ix), a
 
-; _process_next_number
-        pop ix
-        ld a, c
-        ; FIXME as soon as this processes more than 2 bytes of score to add, it screws up, WHY?!
-        cp 0
-        jp nz, loop_1
+        pop ix ; set ix back to where it was when we started processing this digit to add
+        ; Check if there are any bytes left to process
+        xor a ; set a to 0
+        cp c
+        jp nz, loop_1; not processed them all yet
 
         ret
 ; TODO - handle overflow of the entire high score
