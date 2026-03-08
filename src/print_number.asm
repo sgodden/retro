@@ -6,12 +6,12 @@ ORG $8000             ;$8000 is 32768 in Decimal
         ld a, 2
         call OUTCHAN
 
-        ; call Init_Interrupt
+        call Init_Interrupt
 
         ; add some points to the high score
-        ld hl, points_to_add
-        ld bc, points_to_add_end - points_to_add
-        call Add_to_Score
+        ; ld hl, points_to_add
+        ; ld bc, points_to_add_end - points_to_add
+        ; call Add_to_Score
 
         ; print the current high score
         ld hl, high_score
@@ -47,7 +47,7 @@ loop_1
         dec hl ; points to current digit of score to add
         dec c
 
-        push hl
+        push ix
 
         ld d, (hl)
 
@@ -75,7 +75,7 @@ _store_current_digit
         ld (ix), a
 
 ; _process_next_number
-        pop hl
+        pop ix
         ld a, c
         ; FIXME as soon as this processes more than 2 bytes of score to add, it screws up, WHY?!
         cp 0
@@ -269,13 +269,12 @@ _interrupt_counter defb 25
 _interrupt_done defb 0
 
 ;******** High Score stuff ********************
-high_score_attributes defb _at, 20, 10, ink, wht
+high_score_attributes defb _at, 0, 22, ink, wht
 high_score_filler defb 0,0,0,0,0,0
-high_score defb 0,0,0,1,1,1,1,1,9,9
+high_score defb 0,0,0,1,1,1,1,1,1,1
 high_score_end defb 0
 
-; FIXME - 1199 + 11 = 1210, but comes out as 2200
-points_to_add defb 1,9
+points_to_add defb 2,6,7,1,9
 points_to_add_end defb 0
 
 ;********** SYSTEM VARIABLES *********
