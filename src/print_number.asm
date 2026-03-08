@@ -44,6 +44,10 @@ loop_1
 
         ld d, (iy)
 
+        ld a, d
+        cp 0
+        jp z, _process_next_number ; nothing to add, skip
+
 loop_2
         ld a, (ix)
         add a, d
@@ -63,6 +67,7 @@ loop_2
 _store_current_digit
         ld (ix), a
 
+_process_next_number
         pop ix
         ld a, c
         cp 2
