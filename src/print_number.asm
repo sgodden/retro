@@ -44,9 +44,9 @@ loop_1
 
         ld d, (iy)
 
-        ld a, d
-        cp 0
-        jp z, _process_next_number ; nothing to add, skip
+        ; ld a, d
+        ; cp 0
+        ; jp z, _process_next_number ; nothing to add, skip
 
 loop_2
         ld a, (ix)
@@ -70,7 +70,7 @@ _store_current_digit
 _process_next_number
         pop ix
         ld a, c
-        cp 2
+        cp 0
         jp nz, loop_1
 
         ld a, 0
@@ -245,7 +245,7 @@ high_score_attributes defb _at, 10, 10, ink, wht
 high_score defb 0,0,0,7,6,8,9,0,1
 high_score_end equ $
 
-points_to_add defb 3,6,3
+points_to_add defb 1, 1, 1, 1, 1
 points_to_add_end equ $
 
 ;********** SYSTEM VARIABLES *********
