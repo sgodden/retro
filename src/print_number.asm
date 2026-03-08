@@ -71,9 +71,8 @@ _process_next_number
         ld a, c
         ; FIXME as soon as this processes more than 2 bytes of score to add, it screws up, WHY?!
         cp 5
-        jp nz, loop_1
+        ; jp nz, loop_1
 
-        ld a, 0
         ret
 ; TODO - handle overflow of the entire high score
 ; *********************************************************************
@@ -245,7 +244,7 @@ high_score_attributes defb _at, 10, 10, ink, wht
 high_score defb 0,0,0,7,6,8,9,0,1
 high_score_end equ $
 
-points_to_add defb 1, 1, 1, 1, 1,1,1
+points_to_add defb 1, 1, 1, 1, 1,1,9
 points_to_add_end equ $
 
 ;********** SYSTEM VARIABLES *********
