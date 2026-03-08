@@ -6,7 +6,17 @@ ORG $8000             ;$8000 is 32768 in Decimal
         ld a, 2
         call OUTCHAN
 
-        call Init_Interrupt
+        ; call Init_Interrupt
+
+        ; add some points to the high score
+        ld hl, points_to_add
+        ld bc, points_to_add_end - points_to_add
+        call Add_to_Score
+
+        ; print the current high score
+        ld hl, high_score
+        ld bc, high_score_end - high_score
+        call Print_Score
 
 main_loop
         xor a
@@ -30,18 +40,16 @@ Add_to_Score
 ;           add 1 to that digit
 ;           go to if carry set
         ; load the last digit of the current score into d
-        push hl
-        pop iy ; iy now points to last digit of score to add + 1
-        add iy, bc
+        add hl, bc ; iy now points to last digit of score to add + 1
         ld ix, high_score_end
 loop_1
         dec ix ; points to current digit of current score
-        dec iy ; points to current digit of score to add
-        dec bc
+        dec hl ; points to current digit of score to add
+        dec c
 
-        push ix
+        push hl
 
-        ld d, (iy)
+        ld d, (hl)
 
         ; ld a, d
         ; cp 0
@@ -66,12 +74,12 @@ loop_2
 _store_current_digit
         ld (ix), a
 
-_process_next_number
-        pop ix
+; _process_next_number
+        pop hl
         ld a, c
         ; FIXME as soon as this processes more than 2 bytes of score to add, it screws up, WHY?!
-        ; cp 2
-        ; jp nz, loop_1
+        cp 0
+        jp nz, loop_1
 
         ret
 ; TODO - handle overflow of the entire high score
@@ -100,8 +108,8 @@ Print_Score
         pop bc
         inc hl
         dec c
-        xor a
-        cp c
+        ld a, c
+        cp 0
         jp NZ, _print_score_loop
 
         ret
@@ -202,6 +210,13 @@ Interrupt
         ld a, 25
         ld (hl), a
 
+        ; only do it once
+        ; ld hl, _interrupt_done
+        ; ld a, (hl)
+        ; cp 0
+        ; jp nz, _interrupt_end
+        ; ld (hl), 1
+
         ; add some points to the high score
         ld hl, points_to_add
         ld bc, points_to_add_end - points_to_add
@@ -221,9 +236,9 @@ Interrupt
         ; ld (hl), a
         ; jr _interrupt_end
 
-        _interrupt_zero_score
-                ld a, 0
-                ld (hl), a
+        ; _interrupt_zero_score
+                ; ld a, 0
+                ; ld (hl), a
 
         _interrupt_end
                 ; decrement the interrupt counter
@@ -251,13 +266,16 @@ Interrupt
 
 ;******** INTERRUPT SETUP *********************
 _interrupt_counter defb 25
+_interrupt_done defb 0
 
 ;******** High Score stuff ********************
-high_score_attributes defb _at, 10, 10, ink, wht
-high_score defb 0,0,0,7,6,8,9,0,1,2
+high_score_attributes defb _at, 20, 10, ink, wht
+high_score_filler defb 0,0,0,0,0,0
+high_score defb 0,0,0,1,1,1,1,1,9,9
 high_score_end defb 0
 
-points_to_add defb 3,6,3
+; FIXME - 1199 + 11 = 1210, but comes out as 2200
+points_to_add defb 1,9
 points_to_add_end defb 0
 
 ;********** SYSTEM VARIABLES *********
