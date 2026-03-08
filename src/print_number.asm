@@ -193,13 +193,6 @@ Interrupt
         ld a, 25
         ld (hl), a
 
-        ; only do it once
-        ; ld hl, _interrupt_done
-        ; ld a, (hl)
-        ; cp 0
-        ; jp nz, _interrupt_end
-        ; ld (hl), 1
-
         ; add some points to the high score
         ld hl, points_to_add
         ld bc, points_to_add_end - points_to_add
@@ -209,19 +202,6 @@ Interrupt
         ld hl, high_score
         ld bc, high_score_end - high_score
         call Print_Score
-
-        ; increment the high score
-        ; ld hl, high_score_end - 1
-        ; ld a, (hl)
-        ; cp 9
-        ; jr z, _interrupt_zero_score
-        ; inc a
-        ; ld (hl), a
-        ; jr _interrupt_end
-
-        ; _interrupt_zero_score
-                ; ld a, 0
-                ; ld (hl), a
 
         _interrupt_end
                 ; decrement the interrupt counter
@@ -243,7 +223,6 @@ Interrupt
                 pop de
                 pop bc
                 pop af
-
         ei
         ret
 
