@@ -173,12 +173,14 @@ Interrupt
         push de
         push hl
         push ix
+        push iy
         exx
         ex af, af' ; '
         push af
         push bc
         push de
         push hl
+        push ix
         push iy
 
 
@@ -212,12 +214,14 @@ Interrupt
 
                 ; restore registers
                 pop iy
+                pop ix
                 pop hl
                 pop de
                 pop bc
                 pop af
                 exx
                 ex af, af' ;'
+                pop iy
                 pop ix
                 pop hl
                 pop de
